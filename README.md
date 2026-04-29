@@ -1,5 +1,7 @@
 # actions/add-to-project
 
+Automate adding issues and pull requests to GitHub projects
+
 Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at [https://github.com/actions/add-to-project](https://github.com/actions/add-to-project).
 
 ## Versions

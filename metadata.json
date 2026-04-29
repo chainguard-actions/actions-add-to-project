@@ -1,5 +1,6 @@
 {
   "owner": "actions",
   "name": "add-to-project",
-  "visibility": ""
+  "visibility": "internal",
+  "description": "Automate adding issues and pull requests to GitHub projects"
 }
