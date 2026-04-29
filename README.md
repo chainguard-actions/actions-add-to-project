@@ -1,6 +1,12 @@
 # actions/add-to-project
 
-Hardened GitHub Action by [Chainguard](https://www.chainguard.dev).
+Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at [https://github.com/actions/add-to-project](https://github.com/actions/add-to-project).
+
+## Versions
+
+| Version | Tag | Upstream commit |
+|---------|-----|-----------------|
+| v1.0.2 | [`v1.0.2`](https://github.com/chainguard-actions/add-to-project/tree/v1.0.2) | — |
 
 ## Privacy
 
