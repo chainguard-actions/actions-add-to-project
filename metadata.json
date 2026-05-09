@@ -2,5 +2,6 @@
   "owner": "actions",
   "name": "add-to-project",
   "visibility": "internal",
-  "description": "Automate adding issues and pull requests to GitHub projects"
+  "description": "Automate adding issues and pull requests to GitHub projects",
+  "block_publish": false
 }
