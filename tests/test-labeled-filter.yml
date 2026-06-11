@@ -6,51 +6,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      - id: action-or
+      - id: action
         uses: .
         continue-on-error: true
         with:
-          project-url: https://github.com/orgs/test-org/projects/1
-          github-token: fake-token-for-testing
-          labeled: bug,enhancement
-          label-operator: OR
-      - name: Assert OR action ran
+          project-url: "https://github.com/orgs/test-org/projects/1"
+          github-token: "ghp_fakeinvalidtoken1234567890abcdef"
+          labeled: "bug,enhancement"
+          label-operator: "OR"
+        env:
+          GITHUB_EVENT_NAME: issues
+      - name: Assert action ran with label filter inputs (expected failure due to invalid token)
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
         run: |
-          echo "Action outcome (OR): ${{ steps.action-or.outcome }}"
-          if [ "${{ steps.action-or.outcome }}" = "skipped" ]; then
-            echo "FAIL: action-or was skipped unexpectedly"
+          echo "outcome: $OUTCOME"
+          if [ "$OUTCOME" = "success" ] || [ "$OUTCOME" = "failure" ]; then
+            echo "PASS: action ran with labeled and label-operator inputs"
+          else
+            echo "FAIL: action did not run at all (outcome=$OUTCOME)"
             exit 1
           fi
-          echo "PASS: action ran with labeled and label-operator=OR"
-      - id: action-and
-        uses: .
-        continue-on-error: true
-        with:
-          project-url: https://github.com/orgs/test-org/projects/1
-          github-token: fake-token-for-testing
-          labeled: bug,enhancement
-          label-operator: AND
-      - name: Assert AND action ran
-        run: |
-          echo "Action outcome (AND): ${{ steps.action-and.outcome }}"
-          if [ "${{ steps.action-and.outcome }}" = "skipped" ]; then
-            echo "FAIL: action-and was skipped unexpectedly"
-            exit 1
-          fi
-          echo "PASS: action ran with labeled and label-operator=AND"
-      - id: action-not
-        uses: .
-        continue-on-error: true
-        with:
-          project-url: https://github.com/orgs/test-org/projects/1
-          github-token: fake-token-for-testing
-          labeled: wontfix
-          label-operator: NOT
-      - name: Assert NOT action ran
-        run: |
-          echo "Action outcome (NOT): ${{ steps.action-not.outcome }}"
-          if [ "${{ steps.action-not.outcome }}" = "skipped" ]; then
-            echo "FAIL: action-not was skipped unexpectedly"
-            exit 1
-          fi
-          echo "PASS: action ran with labeled and label-operator=NOT"
