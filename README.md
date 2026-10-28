@@ -6,10 +6,10 @@ Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at
 
 ## Versions
 
-| Version | Tag | Upstream commit |
-|---------|-----|-----------------|
-| v1.0.2 | [`v1.0.2`](https://github.com/chainguard-actions/actions-add-to-project/tree/v1.0.2) | [`244f685`](https://github.com/actions/add-to-project/commit/244f685bbc3b7adfa8466e08b698b5577571133e) |
-| v2.0.0 | [`v2.0.0`](https://github.com/chainguard-actions/actions-add-to-project/tree/v2.0.0) | [`5afcf98`](https://github.com/actions/add-to-project/commit/5afcf98fcd03f1c2f92c3c83f58ae24323cc57fd) |
+| Version | Tag | Upstream commit | Hardening report |
+|---------|-----|-----------------|------------------|
+| v1.0.2 | [`v1.0.2`](https://github.com/chainguard-actions/actions-add-to-project/tree/v1.0.2) | [`244f685`](https://github.com/actions/add-to-project/commit/244f685bbc3b7adfa8466e08b698b5577571133e) | [`HARDENING.md`](https://github.com/chainguard-actions/actions-add-to-project/blob/v1.0.2/HARDENING.md) |
+| v2.0.0 | [`v2.0.0`](https://github.com/chainguard-actions/actions-add-to-project/tree/v2.0.0) | [`5afcf98`](https://github.com/actions/add-to-project/commit/5afcf98fcd03f1c2f92c3c83f58ae24323cc57fd) | [`HARDENING.md`](https://github.com/chainguard-actions/actions-add-to-project/blob/v2.0.0/HARDENING.md) |
 
 ## Privacy
 
