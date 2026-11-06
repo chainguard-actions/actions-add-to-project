@@ -1,6 +1,16 @@
 {
   "owner": "actions",
   "repo": "add-to-project",
-  "version": "",
-  "url": "https://github.com/actions/add-to-project"
+  "version": "v2.0.1",
+  "commit_sha": "f2c1f1fa649a891be84948ea89b5dfba1526ef05",
+  "url": "https://github.com/actions/add-to-project",
+  "policy_sha": "374911c4be584df24e6da57af2d990570ef0f859",
+  "test_policy_sha": "843adf9e4b8f85d0c08b27b9d0b09dd094b54702",
+  "test_agent_version": "2",
+  "harden_agent_version": "2",
+  "dist_artifact": {
+    "gcs_uri": "gs://patch-actions-node-artifacts/dist-artifacts/actions/add-to-project/v2.0.1/sha256-5142f52053b89926e822dcabe11cc2130b0d222a69938ba087b02a7e9701bc24.tar.gz",
+    "sha256": "5142f52053b89926e822dcabe11cc2130b0d222a69938ba087b02a7e9701bc24",
+    "size_bytes": 600052
+  }
 }

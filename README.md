@@ -1,15 +1,214 @@
 # actions/add-to-project
 
-Automatically add issues and PRs to GitHub projects
+Use this action to automatically add the current issue or pull request to a [GitHub project](https://docs.github.com/en/issues/trying-out-the-new-projects-experience/about-projects).
+Note that this action does not support [GitHub projects (classic)](https://docs.github.com/en/issues/organizing-your-work-with-project-boards).
 
-Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at [https://github.com/actions/add-to-project](https://github.com/actions/add-to-project).
+## Current Status
 
-## Versions
+[![build-test](https://github.com/actions/add-to-project/actions/workflows/test.yml/badge.svg)](https://github.com/actions/add-to-project/actions/workflows/test.yml)
 
-| Version | Tag | Upstream commit | Hardening report |
-|---------|-----|-----------------|------------------|
-| v1.0.2 | [`v1.0.2`](https://github.com/chainguard-actions/actions-add-to-project/tree/v1.0.2) | [`244f685`](https://github.com/actions/add-to-project/commit/244f685bbc3b7adfa8466e08b698b5577571133e) | [`HARDENING.md`](https://github.com/chainguard-actions/actions-add-to-project/blob/v1.0.2/HARDENING.md) |
-| v2.0.0 | [`v2.0.0`](https://github.com/chainguard-actions/actions-add-to-project/tree/v2.0.0) | [`5afcf98`](https://github.com/actions/add-to-project/commit/5afcf98fcd03f1c2f92c3c83f58ae24323cc57fd) | [`HARDENING.md`](https://github.com/chainguard-actions/actions-add-to-project/blob/v2.0.0/HARDENING.md) |
+## Usage
+
+_See [action.yml](action.yml) for [metadata](https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions) that defines the inputs, outputs, and runs configuration for this action._
+
+_For more information about workflows, see [Using workflows](https://docs.github.com/en/actions/using-workflows)._
+
+Create a workflow that runs when Issues or Pull Requests are opened or labeled in your repository; this workflow also supports adding Issues to your project which are transferred into your repository. Optionally configure any filters you may want to add, such as only adding issues with certain labels. You may match labels with an `AND` or an `OR` operator, or exclude labels with a `NOT` operator.
+
+Once you've configured your workflow, save it as a `.yml` file in your target Repository's `.github/workflows` directory.
+
+### Examples
+
+#### Example Usage: Issue opened with labels `bug` OR `needs-triage`
+
+```yaml
+name: Add bugs to bugs project
+
+on:
+  issues:
+    types:
+      - opened
+
+jobs:
+  add-to-project:
+    name: Add issue to project
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/add-to-project@RELEASE_VERSION
+        with:
+          # You can target a project in a different organization
+          # to the issue
+          project-url: https://github.com/orgs/<orgName>/projects/<projectNumber>
+          github-token: ${{ secrets.ADD_TO_PROJECT_PAT }}
+          labeled: bug, needs-triage
+          label-operator: OR
+```
+
+#### Example Usage: Adds all issues opened that do not include the label `bug` OR `needs-triage`
+
+```yaml
+name: Adds all issues that don't include the 'bug' or 'needs-triage' labels to project board
+
+on:
+  issues:
+    types:
+      - opened
+
+jobs:
+  add-to-project:
+    name: Add issue to project
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/add-to-project@RELEASE_VERSION
+        with:
+          project-url: https://github.com/orgs/<orgName>/projects/<projectNumber>
+          github-token: ${{ secrets.ADD_TO_PROJECT_PAT }}
+          labeled: bug, needs-triage
+          label-operator: NOT
+```
+
+#### Example Usage: Pull Requests labeled with `needs-review` and `size/XL`
+
+```yaml
+name: Add needs-review and size/XL pull requests to projects
+
+on:
+  pull_request:
+    types:
+      - labeled
+
+jobs:
+  add-to-project:
+    name: Add pull request to project
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/add-to-project@RELEASE_VERSION
+        with:
+          project-url: https://github.com/orgs/<orgName>/projects/<projectNumber>
+          github-token: ${{ secrets.ADD_TO_PROJECT_PAT }}
+          labeled: needs-review, size/XL
+          label-operator: AND
+```
+
+### Further reading and additional resources
+
+- [actions/add-to-project](#actionsadd-to-project)
+  - [Current Status](#current-status)
+  - [Usage](#usage)
+    - [Examples](#examples)
+      - [Example Usage: Issue opened with labels `bug` OR `needs-triage`](#example-usage-issue-opened-with-labels-bug-or-needs-triage)
+      - [Example Usage: Adds all issues opened that do not include the label `bug` OR `needs-triage`](#example-usage-adds-all-issues-opened-that-do-not-include-the-label-bug-or-needs-triage)
+      - [Example Usage: Pull Requests labeled with `needs-review` and `size/XL`](#example-usage-pull-requests-labeled-with-needs-review-and-sizexl)
+    - [Further reading and additional resources](#further-reading-and-additional-resources)
+  - [Inputs](#inputs)
+  - [Supported Events](#supported-events)
+  - [Creating a PAT and adding it to your repository](#creating-a-pat-and-adding-it-to-your-repository)
+  - [Setting a specific status or column name to the project item](#setting-a-specific-status-or-column-name-to-the-project-item)
+  - [Development](#development)
+    - [Building `dist/`](#building-dist)
+  - [Releasing](#releasing)
+  - [License](#license)
+
+## Inputs
+
+- <a name="project-url">`project-url`</a> **(required)** is the URL of the GitHub project to add issues to.
+  _eg: `https://github.com/orgs|users/<ownerName>/projects/<projectNumber>`_
+- <a name="github-token">`github-token`</a> **(required)** is a [personal access
+  token](https://github.com/settings/tokens/new) with `repo` and `project` scopes.
+  _See [Creating a PAT and adding it to your repository](#creating-a-pat-and-adding-it-to-your-repository) for more details_
+- <a name="labeled">`labeled`</a> **(optional)** is a comma-separated list of labels used to filter applicable issues. When this key is provided, an issue must have _one_ of the labels in the list to be added to the project. Omitting this key means that any issue will be added.
+- <a name="label-operator">`label-operator`</a> **(optional)** is the behavior of the labels filter, either `AND`, `OR` or `NOT` that controls if the issue should be matched with `all` `labeled` input or any of them, default is `OR`.
+
+## Supported Events
+
+This action reads the issue or pull request from the event payload; it does not limit which event types can trigger the workflow. You can use any [event](https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows) whose payload includes the issue or pull request to add. See the [`issues` event payload](https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#issues) and [`pull_request` event payload](https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#pull_request) documentation for details.
+
+If [labeled input(s)](#labeled) are defined, the action only adds an issue or pull request when its labels match the configured filter.
+
+## Creating a PAT and adding it to your repository
+
+- Create a new [personal access token](https://github.com/settings/tokens/new). _See [Creating a personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) for more information_
+  - For **Tokens (classic)** include the `project` scope; for private repos you will also need `repo` scope.
+  - For **Fine-grained tokens**, you must first select the appropriate _owner_ and associated _repositories_. Then select _Organization permissions -> `projects` `read & write`_, and _Repository permissions -> `issues` `read-only`_ and _`pull requests` `read-only`_.
+
+- add the newly created PAT as a repository secret, this secret will be referenced by the [github-token input](#github-token)
+  _See [Encrypted secrets](https://docs.github.com/en/actions/security-guides/encrypted-secrets#creating-encrypted-secrets-for-a-repository) for more information_
+
+## Setting a specific status or column name to the project item
+
+If you want to add an issue to a custom default column in a project (i.e. other than 'Todo'), you can do this directly via the project UI. You don't need to add anything else to your YAML workflow file to get this to work.
+
+Use the [Add To GitHub Projects](https://github.com/marketplace/actions/add-to-github-projects) action to assign newly opened issues to the project. And then in the project UI simply [specify which column to use as the default](https://docs.github.com/en/issues/planning-and-tracking-with-projects/learning-about-projects/quickstart-for-projects#configure-built-in-automation)!
+
+## Development
+
+To get started contributing to this project, clone it and install dependencies.
+Note that this action runs in Node.js 24.x, so we recommend using that version
+of Node (see "engines" in this action's package.json for details).
+
+```shell
+git clone https://github.com/actions/add-to-project
+cd add-to-project
+npm ci
+```
+
+Or, use [GitHub Codespaces](https://github.com/features/codespaces).
+
+See the [toolkit
+documentation](https://github.com/actions/toolkit/blob/master/README.md#packages)
+for the various packages used in building this action.
+
+### Building `dist/`
+
+This action's compiled output is committed to `dist/`, and the `check-dist` workflow
+fails if `dist/` doesn't match a fresh build. Rebuild and commit `dist/` as part of your
+pull request whenever you change anything the bundle is built from — most commonly
+`src/`, but also `fix-regex.js`, `tsconfig.json`, or dependencies in `package.json` /
+`package-lock.json`:
+
+```shell
+npm ci
+npm run build
+git add dist/
+```
+
+`npm run build` formats, runs the type/format/lint checks, compiles, and packages, so it
+catches problems before CI does. If you only want the bundle, run `npm run build:compile`
+and `npm run build:package` — that pair is exactly what `check-dist` runs.
+
+A few things worth knowing:
+
+- **Run `npm ci`, not `npm install`, before rebuilding.** `npm ci` installs exactly what
+  `package-lock.json` specifies. If `node_modules` has drifted from the lockfile — most
+  commonly after a dependency bump lands on `main` — the bundle you commit will differ
+  from the one CI builds, and `check-dist` will fail with a diff in code you never
+  touched.
+- **`check-dist` ignores Markdown-only pull requests**, so a green run on a docs change
+  doesn't mean `dist/` is current.
+- **If `check-dist` fails, read the diff it prints.** It also uploads the expected
+  `dist/` as a workflow artifact, which you can download and compare against your local
+  build.
+
+## Releasing
+
+This project uses [semantic-release](https://github.com/semantic-release/semantic-release)
+to automate versioning and GitHub Releases. When a pull request is merged to `main`,
+the release workflow analyzes commit messages and—if a release is warranted—creates
+a new version tag, publishes a GitHub Release, and updates the major version tag
+(e.g., `v2`) to point to the latest release.
+
+Commit messages must follow [Conventional Commits](https://www.conventionalcommits.org/):
+
+- `fix: ...` → patch release
+- `feat: ...` → minor release
+- `BREAKING CHANGE` in footer → major release
+
+See [RELEASING.md](RELEASING.md) for full details on commit format, troubleshooting,
+and how the release process works.
+
+## License
+
+The scripts and documentation in this project are released under the [MIT License](LICENSE)
 
 ## Privacy
 
